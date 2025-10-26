@@ -1,9 +1,7 @@
-from .currency import CurrencyConvertRequest, CurrencyConvertResponse
-from .temperature import TemperatureConvertRequest, TemperatureConvertResponse
+from .currency import CurrencyConvertResponse
+from .temperature import TemperatureConvertResponse
 
 __all__ = [
-    "CurrencyConvertRequest",
     "CurrencyConvertResponse",
-    "TemperatureConvertRequest",
     "TemperatureConvertResponse",
 ]
