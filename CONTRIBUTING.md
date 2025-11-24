@@ -52,7 +52,7 @@
 
 4. Проверьте, что приложение запускается:
    ```bash
-   poetry run uvicorn tp_project.main:app --reload
+   poetry run uvicorn tp_project.app:app --reload
    ```
 
 ## 📤 Отправка изменений
