@@ -49,10 +49,17 @@ CURRENCY_BASE_URL=https://v6.exchangerate-api.com/v6
 poetry install
 
 # Запуск сервера
-poetry run uvicorn tp_project.main:app --reload
+poetry run uvicorn tp_project.app:app --reload
 ```
 
-Сервер запустится на `http://127.0.0.1:8000`
+### 🐳 С Docker Compose
+
+```bash
+# Запуск контейнера
+docker-compose up --build
+```
+
+Сервер запустится на `http://localhost:8000`
 
 ## 💻 Использование API
 
@@ -119,6 +126,7 @@ curl "http://localhost:8000/temperature/convert?temperature=100&from_unit=C&to_u
 - **Pydantic** - Валидация данных и настроек
 - **Requests** - HTTP клиент для работы с внешними API
 - **Poetry** - Управление зависимостями Python
+- **Docker** - Контейнеризация приложения
 - **ExchangeRate API** - Источник актуальных курсов валют
 
 ## 🏗️ Структура проекта
@@ -139,14 +147,23 @@ tp-project/
 │       ├── services/                  # Бизнес-логика
 │       │   ├── currency.py            # Сервис конвертации валют
 │       │   └── temperature.py         # Сервис конвертации температур
+│       ├── app.py                     # Приложение FastAPI
 │       └── main.py                    # Точка входа приложения
 ├── tests/                             # Тесты
-│   ├── test_currency.py               # Тесты валют
-│   ├── test_temperature.py            # Тесты температур
-│   └── test_api.py                    # Тесты API
+│   ├── test_currency_api.py           # Тесты API валют
+│   ├── test_temperature_api.py        # Тесты API температур
+│   └── test_root_api.py               # Тесты корневого endpoint
+├── .github/                           # GitHub конфигурация
+│   └── workflows/
+│       └── ci.yml                     # CI/CD конфигурация
 ├── example.env                        # Пример файла окружения
+├── Dockerfile                         # Docker образ
+├── docker-compose.yml                 # Docker Compose конфигурация
+├── .dockerignore                      # Исключения для Docker
+├── .pre-commit-config.yaml            # Конфигурация pre-commit
 ├── pyproject.toml                     # Конфигурация Poetry
 ├── poetry.lock                        # Lock файл зависимостей
+├── CONTRIBUTING.md                    # Руководство по разработке
 ├── LICENSE                            # Лицензия MIT
 └── README.md                          # Документация
 ```
