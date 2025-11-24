@@ -49,7 +49,7 @@ CURRENCY_BASE_URL=https://v6.exchangerate-api.com/v6
 poetry install
 
 # Запуск сервера
-poetry run uvicorn tp_project.main:app --reload
+poetry run uvicorn tp_project.app:app --reload
 ```
 
 Сервер запустится на `http://127.0.0.1:8000`
@@ -139,6 +139,7 @@ tp-project/
 │       ├── services/                  # Бизнес-логика
 │       │   ├── currency.py            # Сервис конвертации валют
 │       │   └── temperature.py         # Сервис конвертации температур
+│       ├── app.py                     # Приложение FastAPI
 │       └── main.py                    # Точка входа приложения
 ├── tests/                             # Тесты
 │   ├── test_currency.py               # Тесты валют
