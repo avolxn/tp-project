@@ -1,15 +1,12 @@
-import requests
+import httpx
 
-from tp_project.core import settings
+from tp_project.core.config import get_settings
+from tp_project.services.cache import get_cache_service
 
 
 class ExchangeRateAPIClient:
-    def __init__(self):
-        self.api_key = settings.CURRENCY_API_KEY
-        self.base_url = settings.CURRENCY_BASE_URL
-
-    def get_exchange_rates(self, from_currency: str) -> dict[str, float]:
-        """Получает курсы валют от API
+    async def get_exchange_rates(self, from_currency: str) -> dict[str, float]:
+        """Получает курсы валют от API с кэшированием в Redis
 
         Args:
             from_currency (str): Код валюты для конвертации из
@@ -20,21 +17,34 @@ class ExchangeRateAPIClient:
         Returns:
             dict[str, float]: Курсы валют
         """
-        url = f"{self.base_url}/{self.api_key}/latest/{from_currency}"
-        response = requests.get(url, timeout=10)
-        data = response.json()
+        cache_key = f"exchange_rates:{from_currency}"
+        cache = get_cache_service()
+        settings = get_settings()
+
+        cached = await cache.get(cache_key)
+        if cached:
+            return cached
+
+        url = f"{settings.CURRENCY_BASE_URL}/{settings.CURRENCY_API_KEY}/latest/{from_currency}"
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, timeout=10)
+            data = response.json()
 
         if data["result"] == "error":
             raise ValueError(f"Некорректный код валюты: {from_currency}")
 
-        return data["conversion_rates"]
+        rates = data["conversion_rates"]
+
+        await cache.set(cache_key, rates)
+
+        return rates
 
 
 class CurrencyConverterService:
     def __init__(self):
         self.exchange_rate_api_client = ExchangeRateAPIClient()
 
-    def convert(self, amount: float, from_currency: str, to_currency: str) -> float:
+    async def convert(self, amount: float, from_currency: str, to_currency: str) -> float:
         """Конвертирует сумму из одной валюты в другую
 
         Args:
@@ -51,7 +61,7 @@ class CurrencyConverterService:
         from_currency = from_currency.upper()
         to_currency = to_currency.upper()
 
-        exchange_rates = self.exchange_rate_api_client.get_exchange_rates(from_currency)
+        exchange_rates = await self.exchange_rate_api_client.get_exchange_rates(from_currency)
 
         if to_currency not in exchange_rates:
             raise ValueError(f"Некорректный код валюты: {to_currency}")
@@ -59,4 +69,11 @@ class CurrencyConverterService:
         return amount * exchange_rates[to_currency]
 
 
-currency_converter_service = CurrencyConverterService()
+_currency_converter_service: CurrencyConverterService | None = None
+
+
+def get_currency_converter_service() -> CurrencyConverterService:
+    global _currency_converter_service
+    if _currency_converter_service is None:
+        _currency_converter_service = CurrencyConverterService()
+    return _currency_converter_service

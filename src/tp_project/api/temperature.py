@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query
 
 from tp_project.schemas import TemperatureConvertResponse
-from tp_project.services import temperature_converter_service
+from tp_project.services import get_temperature_converter_service
 
 router = APIRouter(tags=["temperature"])
 
@@ -14,7 +14,7 @@ async def convert_temperature(
 ):
     """Конвертирует температуру между единицами измерения (C, F, K)"""
     try:
-        result = temperature_converter_service.convert(
+        result = await get_temperature_converter_service().convert(
             temperature=temperature,
             from_unit=from_unit,
             to_unit=to_unit,
