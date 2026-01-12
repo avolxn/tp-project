@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query
 
 from tp_project.schemas import CurrencyConvertResponse
-from tp_project.services import currency_converter_service
+from tp_project.services import get_currency_converter_service
 
 router = APIRouter(tags=["currency"])
 
@@ -14,7 +14,7 @@ async def convert_currency(
 ):
     """Конвертирует валюту из одной в другую используя актуальные курсы"""
     try:
-        result = currency_converter_service.convert(
+        result = await get_currency_converter_service().convert(
             amount=amount,
             from_currency=from_currency,
             to_currency=to_currency,

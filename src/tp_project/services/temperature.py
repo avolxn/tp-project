@@ -1,5 +1,5 @@
 class TemperatureConverterService:
-    def convert(self, temperature: float, from_unit: str, to_unit: str) -> float:
+    async def convert(self, temperature: float, from_unit: str, to_unit: str) -> float:
         """Конвертирует температуру из одной единицы измерения в другую
 
         Args:
@@ -35,4 +35,11 @@ class TemperatureConverterService:
             raise ValueError(f"Некорректная единица измерения температуры: {to_unit}")
 
 
-temperature_converter_service = TemperatureConverterService()
+_temperature_converter_service: TemperatureConverterService | None = None
+
+
+def get_temperature_converter_service() -> TemperatureConverterService:
+    global _temperature_converter_service
+    if _temperature_converter_service is None:
+        _temperature_converter_service = TemperatureConverterService()
+    return _temperature_converter_service

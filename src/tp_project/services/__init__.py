@@ -1,4 +1,5 @@
-from .currency import currency_converter_service
-from .temperature import temperature_converter_service
+from .cache import get_cache_service
+from .currency import get_currency_converter_service
+from .temperature import get_temperature_converter_service
 
-__all__ = ["currency_converter_service", "temperature_converter_service"]
+__all__ = ["get_currency_converter_service", "get_temperature_converter_service", "get_cache_service"]
